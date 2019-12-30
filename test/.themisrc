@@ -1,0 +1,57 @@
+
+call themis#option('recursive', 1)
+
+let s:root = getcwd()
+
+function! MinfilerTestAssert() abort
+    let assert = themis#helper('assert')
+
+    function! assert.current_line(expected) abort
+        let actual = getline(line('.'))
+        let message = printf('current line should be %s, but actual: %s', a:expected, actual)
+        call self.equals(actual, a:expected, message)
+    endfunction
+
+    function! assert.file_name(expected) abort
+        let actual = fnamemodify(bufname('%'), ':t')
+        let message = printf('file name should be %s, but actual: %s', a:expected, actual)
+        call self.equals(actual, a:expected, message)
+    endfunction
+
+    function! assert.filetype(expected) abort
+        let actual = &filetype
+        let message = printf('&filetype should be %s, but actual: %s', a:expected, actual)
+        call self.equals(actual, a:expected, message)
+    endfunction
+
+    function! assert.working_dir(expected) abort
+        let actual = getcwd()
+        let message = printf('current working dir should be %s, but actual: %s', a:expected, actual)
+        call self.equals(actual, a:expected, message)
+    endfunction
+
+    function! assert.syntax_name(expected) abort
+        let actual = synIDattr(synID(line('.'), col('.'), v:true), 'name')
+        let message = printf('syntax name should be %s, but actual: %s', a:expected, actual)
+        call self.equals(actual, a:expected, message)
+    endfunction
+
+    return assert
+endfunction
+
+function! MinfilerTestBeforeEach() abort
+    execute 'cd' s:root
+
+    call themis#log('')
+
+    filetype on
+    syntax enable
+endfunction
+
+function! MinfilerTestAfterEach() abort
+    silent! %bwipeout!
+    execute 'cd' s:root
+
+    filetype off
+    syntax off
+endfunction
