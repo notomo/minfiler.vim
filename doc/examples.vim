@@ -1,4 +1,3 @@
-
 " open in new tab
 nnoremap F :<C-u>tabedit<CR>:Minfiler<CR>
 

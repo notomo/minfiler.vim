@@ -3,7 +3,7 @@ test:
 	THEMIS_VIM=vim THEMIS_ARGS="-e -s" themis
 
 doc:
-	gevdoc --externals ./example/examples.vim
+	gevdoc --externals ./doc/examples.vim ./doc/introduction
 
 .PHONY: test
 .PHONY: doc
