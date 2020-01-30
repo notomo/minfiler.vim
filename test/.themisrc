@@ -25,9 +25,10 @@ function! MinfilerTestAssert() abort
     endfunction
 
     function! assert.working_dir(expected) abort
-        let actual = getcwd()
-        let message = printf('current working dir should be %s, but actual: %s', a:expected, actual)
-        call self.equals(actual, a:expected, message)
+        let expected = fnamemodify(a:expected, ':gs?\?\/?')
+        let actual = fnamemodify(getcwd(), ':gs?\?\/?')
+        let message = printf('current working dir should be %s, but actual: %s', expected, actual)
+        call self.equals(actual, expected, message)
     endfunction
 
     function! assert.syntax_name(expected) abort

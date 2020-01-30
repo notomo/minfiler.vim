@@ -1,6 +1,9 @@
 test:
-	THEMIS_VIM=nvim THEMIS_ARGS="-e -s --headless" themis
-	THEMIS_VIM=vim THEMIS_ARGS="-e -s" themis
+	THEMIS_VIM=nvim THEMIS_ARGS="-e -s --headless" $(MAKE) _test
+	THEMIS_VIM=vim THEMIS_ARGS="-e -s" $(MAKE) _test
+
+_test:
+	themis
 
 doc:
 	gevdoc --externals ./doc/examples.vim ./doc/introduction
