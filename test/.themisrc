@@ -3,7 +3,56 @@ call themis#option('recursive', 1)
 
 let s:root = getcwd()
 
-function! MinfilerTestAssert() abort
+function! MinfilerTestHelper() abort
+    let helper = {
+        \ 'assert': s:assert(),
+    \ }
+
+    function! helper.before_each() abort
+        execute 'cd' s:root
+
+        call themis#log('')
+
+        filetype on
+        syntax enable
+    endfunction
+
+    function! helper.after_each() abort
+        silent! %bwipeout!
+        execute 'cd' s:root
+
+        filetype off
+        syntax off
+    endfunction
+
+    function! helper.suite(name) abort
+        let suite = themis#suite(a:name)
+        let suite.before_each = self.before_each
+        let suite.after_each = self.after_each
+        return suite
+    endfunction
+
+    function! helper.buffer_log() abort
+        call themis#log('')
+        let lines = getbufline('%', 1, '$')
+        for line in lines
+            call themis#log('[buffer] ' . line)
+        endfor
+    endfunction
+
+    function! helper.search(pattern) abort
+        let result = search(a:pattern)
+        if result == 0
+            let message = printf('%s not found', a:pattern)
+            call self.assert.fail(message)
+        endif
+        return result
+    endfunction
+
+    return helper
+endfunction
+
+function! s:assert() abort
     let assert = themis#helper('assert')
 
     function! assert.current_line(expected) abort
@@ -38,21 +87,4 @@ function! MinfilerTestAssert() abort
     endfunction
 
     return assert
-endfunction
-
-function! MinfilerTestBeforeEach() abort
-    execute 'cd' s:root
-
-    call themis#log('')
-
-    filetype on
-    syntax enable
-endfunction
-
-function! MinfilerTestAfterEach() abort
-    silent! %bwipeout!
-    execute 'cd' s:root
-
-    filetype off
-    syntax off
 endfunction
