@@ -7,6 +7,10 @@ function! s:open_child() abort
     execute 'normal l'
 endfunction
 
+function! s:open_parent() abort
+    execute 'normal h'
+endfunction
+
 function! s:suite.filer_open()
     let cwd = getcwd()
 
@@ -32,6 +36,14 @@ function! s:suite.go_child_and_parent()
     call s:helper.buffer_log()
 
     call s:helper.search('autoload')
+    call s:open_child()
+    call s:helper.buffer_log()
+    call s:assert.working_dir(cwd . '/autoload')
+
+    call s:open_parent()
+    call s:helper.buffer_log()
+    call s:assert.working_dir(cwd)
+
     call s:open_child()
     call s:helper.buffer_log()
     call s:assert.working_dir(cwd . '/autoload')

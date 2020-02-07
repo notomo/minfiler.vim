@@ -24,12 +24,18 @@ function! minfiler#vim#filer(path) abort
     let props = {}
     let line = 1
     let paths = [fnamemodify(path, ':h:s?^\.$?\/?')] + map(copy(files), {_, v -> fnamemodify(v, ':p:gs?\?\/?')})
+    let before_path = fnamemodify(getcwd(), ':gs?\?\/?') . '/'
     for p in paths
         let id = line
         let is_dir = isdirectory(p)
         call prop_add(line, 1, {'length': len(getline(line)), 'type': is_dir ? s:dir_type_name : s:file_type_name, 'id': id})
         let prop = {'path': p, 'is_dir': is_dir}
         let props[id] = prop
+
+        if prop.path ==? before_path
+            call setpos('.', [0, line, 0, 0])
+        endif
+
         let line += 1
     endfor
     let s:buf_props[bufnr] = props

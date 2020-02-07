@@ -18,6 +18,7 @@ function! minfiler#nvim#filer(path) abort
     let props = {}
     let line = 0
     let paths = [fnamemodify(path, ':h:s?^\.$?\/?')] + map(copy(files), {_, v -> fnamemodify(v, ':p:gs?\?\/?')})
+    let before_path = fnamemodify(getcwd(), ':gs?\?\/?') . '/'
     for p in paths
         let id = nvim_buf_set_extmark(bufnr, s:namespace, 0, line, 0, {})
         let is_dir = isdirectory(p)
@@ -28,6 +29,10 @@ function! minfiler#nvim#filer(path) abort
         let props[id] = prop
 
         let line += 1
+
+        if prop.path ==? before_path
+            call setpos('.', [0, line, 0, 0])
+        endif
     endfor
     let s:buf_props[bufnr] = props
     execute 'lcd' path
