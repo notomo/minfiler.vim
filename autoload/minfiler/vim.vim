@@ -14,7 +14,7 @@ function! minfiler#vim#filer(path) abort
     let bufnr = bufnr('%')
     let path = fnamemodify(a:path, ':p:gs?\?\/?:s?[^:]\zs\/$??')
     let files = glob(path . '/*', v:true, v:true)
-    call sort(files, { a, b -> isdirectory(a) < isdirectory(b)})
+    call sort(files, { a, b -> isdirectory(b) - isdirectory(a)})
 
     setlocal modifiable
     silent %delete _

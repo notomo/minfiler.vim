@@ -17,7 +17,9 @@ function! s:suite.filer_open()
     call s:assert.working_dir(cwd)
     call s:assert.filetype('minfiler')
 
-    call s:helper.search('Makefile')
+    let test_dir_line = s:helper.search('test')
+    let makefile_line = s:helper.search('Makefile')
+    call s:assert.true(test_dir_line < makefile_line, 'dir should be above than file')
     call s:open_child()
 
     call s:assert.file_name('Makefile')
