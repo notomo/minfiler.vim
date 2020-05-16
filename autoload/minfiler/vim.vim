@@ -10,36 +10,23 @@ if empty(prop_type_get(s:file_type_name))
     call prop_type_add(s:file_type_name, {})
 endif
 
-function! minfiler#vim#filer(path) abort
-    let bufnr = bufnr('%')
-    let path = fnamemodify(a:path, ':p:gs?\?\/?:s?[^:]\zs\/$??')
-    let files = map(readdir(path), {_, v -> printf('%s/%s', path, v)})
-    call sort(files, { a, b -> isdirectory(b) - isdirectory(a)})
-
-    setlocal modifiable
-    silent %delete _
-    call setline(1, ['..'] + map(copy(files), {_, v -> fnamemodify(v, ':t')}))
-    setlocal nomodifiable nomodified buftype=nofile bufhidden=wipe
-
+function! minfiler#vim#set_props(dir) abort
     let props = {}
     let line = 1
-    let paths = [fnamemodify(path, ':h:s?^\.$?\/?')] + map(copy(files), {_, v -> fnamemodify(v, ':p:gs?\?\/?')})
-    let before_path = fnamemodify(getcwd(), ':gs?\?\/?') . '/'
-    for p in paths
+    for p in a:dir.paths
         let id = line
         let is_dir = isdirectory(p)
         call prop_add(line, 1, {'length': len(getline(line)), 'type': is_dir ? s:dir_type_name : s:file_type_name, 'id': id})
         let prop = {'path': p, 'is_dir': is_dir}
         let props[id] = prop
 
-        if prop.path ==? before_path
+        if prop.path ==? a:dir.before
             call setpos('.', [0, line, 0, 0])
         endif
 
         let line += 1
     endfor
-    let s:buf_props[bufnr] = props
-    execute 'lcd' path
+    let s:buf_props[bufnr('%')] = props
 endfunction
 
 function! minfiler#vim#open() abort
@@ -55,7 +42,7 @@ function! minfiler#vim#open() abort
 
     let prop = s:buf_props[bufnr][props[0].id]
     if prop.is_dir
-        return minfiler#vim#filer(prop.path)
+        return minfiler#filer(prop.path)
     endif
     execute 'edit' prop.path
 endfunction
