@@ -13,7 +13,7 @@ endif
 function! minfiler#vim#filer(path) abort
     let bufnr = bufnr('%')
     let path = fnamemodify(a:path, ':p:gs?\?\/?:s?[^:]\zs\/$??')
-    let files = glob(path . '/*', v:true, v:true)
+    let files = map(readdir(path), {_, v -> printf('%s/%s', path, v)})
     call sort(files, { a, b -> isdirectory(b) - isdirectory(a)})
 
     setlocal modifiable
