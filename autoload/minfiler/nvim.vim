@@ -9,11 +9,13 @@ function! minfiler#nvim#set_props(dir) abort
     let props = {}
     let line = 0
     for p in a:dir.paths
-        let id = nvim_buf_set_extmark(bufnr, s:ns, 0, line, 0, {})
+        let opts = {}
         let is_dir = isdirectory(p)
         if is_dir
-            call nvim_buf_add_highlight(bufnr, s:ns, 'MinfilerDir', line, 0, -1)
+            let opts['hl_group'] = 'MinfilerDir'
+            let opts['end_col'] = len(getline(line + 1))
         endif
+        let id = nvim_buf_set_extmark(bufnr, s:ns, line, 0, opts)
         let prop = {'path': p, 'is_dir': is_dir}
         let props[id] = prop
 
